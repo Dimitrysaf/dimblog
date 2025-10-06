@@ -6,7 +6,6 @@ import {
   Typography,
   Box,
 } from '@mui/material';
-import { getPublicPosts } from '../lib/data';
 import InboxIcon from '@mui/icons-material/Inbox';
 
 interface Post {
@@ -16,8 +15,30 @@ interface Post {
   image_url: string;
 }
 
-export default async function PostGrid() {
-  const posts = await getPublicPosts();
+// Mock data for posts
+const mockPosts: Post[] = [
+  {
+    id: 1,
+    title: 'First Post',
+    summary: 'This is the summary of the first post.',
+    image_url: 'https://dummyimage.com/600x400/000/0011ff.png&text=AAAAAA',
+  },
+  {
+    id: 2,
+    title: 'Second Post',
+    summary: 'This is the summary of the second post.',
+    image_url: 'https://dummyimage.com/600x400/000/0011ff.png&text=AAAAAA',
+  },
+  {
+    id: 3,
+    title: 'Third Post',
+    summary: 'This is the summary of the third post.',
+    image_url: 'https://dummyimage.com/600x400/000/0011ff.png&text=AAAAAA',
+  },
+];
+
+export default function PostGrid() {
+  const posts = mockPosts;
 
   if (posts.length === 0) {
     return (
