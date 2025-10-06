@@ -14,6 +14,7 @@
     "@mui/icons-material": "^7.3.4",
     "@mui/material": "^7.3.4",
     "@neondatabase/serverless": "^1.0.2",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.58.0",
     "next": "15.5.4",
     "react": "19.1.0",
