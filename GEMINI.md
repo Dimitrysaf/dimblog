@@ -1,3 +1,7 @@
+This project is deployed in Vercel. 
+It uses Neon for Database PostgreSQL and Supabase for API backend. 
+As UI library, this project ONLY USES Material UI (MUI).
+
 # **AI Development Guidelines for Next.js in Firebase Studio**
 
 These guidelines define the operational principles and capabilities of an AI agent (e.g., Gemini) interacting with Next.js projects within the Firebase Studio environment. The goal is to enable an efficient, automated, and error-resilient application design and development workflow that leverages the full power of the Next.js framework.
