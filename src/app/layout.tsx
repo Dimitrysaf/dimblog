@@ -8,6 +8,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { blue } from "@mui/material/colors";
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Container from '@mui/material/Container';
+import { AuthProvider } from '../lib/AuthContext';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,13 +35,15 @@ export default function RootLayout({
   return (
     <html lang="el">
       <body className={inter.className}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <SearchAppBar />
-          <Container maxWidth="lg">
-            {children}
-          </Container>
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <SearchAppBar />
+            <Container maxWidth="lg">
+              {children}
+            </Container>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

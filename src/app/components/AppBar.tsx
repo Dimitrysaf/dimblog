@@ -1,36 +1,72 @@
 'use client';
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import SearchIcon from '@mui/icons-material/Search';
-import Container from '@mui/material/Container';
-import Link from 'next/link';
+import { useState } from 'react';
+import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import LockIcon from '@mui/icons-material/Lock';
+import EditIcon from '@mui/icons-material/Edit';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { useAuth } from '../../lib/AuthContext';
+import LoginDialog from './LoginDialog';
 
-export default function SearchAppBar() {
+export default function MyAppBar() {
+  const { user, signOut } = useAuth();
+  const router = useRouter();
+  const [loginOpen, setLoginOpen] = useState(false);
+
+  const handleLogout = async () => {
+    await signOut();
+    router.push('/');
+  };
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <>
       <AppBar position="static">
-        <Container maxWidth="lg">
-          <Toolbar disableGutters>
-            <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-              <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-                DimBlog
-              </Link>
-            </Typography>
-            <IconButton
-              size="large"
-              edge="end"
+        <Toolbar>
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              flexGrow: 1, 
+              cursor: 'pointer',
+              '&:hover': { opacity: 0.8 }
+            }}
+            onClick={() => router.push('/')}
+          >
+            DimBlog
+          </Typography>
+          
+          {user ? (
+            <>
+              <Button 
+                color="inherit" 
+                startIcon={<EditIcon />}
+                onClick={() => router.push('/create')}
+              >
+                New Post
+              </Button>
+              <Button 
+                color="inherit" 
+                startIcon={<LogoutIcon />}
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </>
+          ) : (
+            <IconButton 
               color="inherit"
-              aria-label="search"
+              onClick={() => setLoginOpen(true)}
+              title="Admin Login"
             >
-              <SearchIcon />
+              <LockIcon />
             </IconButton>
-          </Toolbar>
-        </Container>
+          )}
+        </Toolbar>
       </AppBar>
-    </Box>
+
+      <LoginDialog 
+        open={loginOpen} 
+        onClose={() => setLoginOpen(false)} 
+      />
+    </>
   );
 }

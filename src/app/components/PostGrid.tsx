@@ -1,102 +1,114 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import {
+  Grid as Grid, // Corrected import for MUI v6+
   Card,
-  CardActionArea,
-  CardMedia,
   CardContent,
+  CardMedia,
   Typography,
   Box,
+  CircularProgress,
+  CardActionArea,
 } from '@mui/material';
+import { supabase } from '../../lib/supabaseClient';
 import InboxIcon from '@mui/icons-material/Inbox';
+import Link from 'next/link';
 
+// This interface should match the 'posts' table in your Supabase.
 interface Post {
   id: number;
+  slug: string;
   title: string;
-  summary: string;
-  image_url: string;
+  content: string;
+  image_url: string | null;
+  created_at: string;
 }
 
-// Mock data for posts
-const mockPosts: Post[] = [
-  {
-    id: 1,
-    title: 'First Post',
-    summary: 'This is the summary of the first post.',
-    image_url: 'https://dummyimage.com/600x400/000/0011ff.png&text=AAAAAA',
-  },
-  {
-    id: 2,
-    title: 'Second Post',
-    summary: 'This is the summary of the second post.',
-    image_url: 'https://dummyimage.com/600x400/000/0011ff.png&text=AAAAAA',
-  },
-  {
-    id: 3,
-    title: 'Third Post',
-    summary: 'This is the summary of the third post.',
-    image_url: 'https://dummyimage.com/600x400/000/0011ff.png&text=AAAAAA',
-  },
-];
-
 export default function PostGrid() {
-  const posts = mockPosts;
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('posts')
+          .select('*')
+          .eq('status', 'published')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          throw error;
+        }
+        
+        setPosts(data || []);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   if (posts.length === 0) {
     return (
       <Box
         sx={{
+          mt: 8,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          height: '50vh', // Adjust height as needed
           textAlign: 'center',
-          mt: 4,
+          color: 'text.secondary',
         }}
       >
-        <InboxIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
-        <Typography variant="h5" component="div" gutterBottom>
-          Δεν υπάρχουν ακόμη αναρτήσεις
+        <InboxIcon sx={{ fontSize: 60 }} />
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          No posts yet
         </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Ελέγξτε αργότερα για νέο περιεχόμενο.
-        </Typography>
+        <Typography>Your first published post will appear here!</Typography>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ flexGrow: 1, mt: 4 }}>
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', mx: -2 }}>
-        {posts.map((post: Post) => (
-          <Box
-            key={post.id}
-            sx={{
-              px: 2,
-              mb: 4,
-              width: { xs: '100%', sm: '50%', md: '33.3333%' },
-            }}
-          >
-            <Card>
-              <CardActionArea>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image={post.image_url} // Use the image_url from the database
-                  alt={post.title}
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
+      <Grid container spacing={4}>
+        {posts.map((post) => (
+          // Corrected Grid usage for MUI v6+
+          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={post.id}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <CardActionArea component={Link} href={`/post/${post.slug}`}>
+                {post.image_url && (
+                  <CardMedia
+                    component="img"
+                    height="200"
+                    image={post.image_url}
+                    alt={post.title}
+                  />
+                )}
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Typography variant="h5" gutterBottom>
                     {post.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {post.summary}
+                    {post.content.substring(0, 150)}...
                   </Typography>
                 </CardContent>
               </CardActionArea>
             </Card>
-          </Box>
+          </Grid>
         ))}
-      </Box>
-    </Box>
+      </Grid>
   );
 }
