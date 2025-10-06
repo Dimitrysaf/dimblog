@@ -7,6 +7,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from '@mui/material/CssBaseline';
 import { grey } from "@mui/material/colors";
 import useMediaQuery from '@mui/material/useMediaQuery';
+import Container from '@mui/material/Container';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,7 +37,9 @@ export default function RootLayout({
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <SearchAppBar />
-          {children}
+          <Container maxWidth="lg">
+            {children}
+          </Container>
         </ThemeProvider>
       </body>
     </html>
