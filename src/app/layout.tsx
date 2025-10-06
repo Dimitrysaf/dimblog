@@ -5,7 +5,7 @@ import "./globals.css";
 import SearchAppBar from "./components/AppBar";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from '@mui/material/CssBaseline';
-import { grey } from "@mui/material/colors";
+import { blue } from "@mui/material/colors";
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Container from '@mui/material/Container';
 
@@ -24,7 +24,7 @@ export default function RootLayout({
         palette: {
           mode: prefersDarkMode ? 'dark' : 'light',
           primary: {
-            main: grey[800],
+            main: blue[500],
           },
         },
       }),

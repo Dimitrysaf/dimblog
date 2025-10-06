@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import SearchIcon from '@mui/icons-material/Search';
 import Container from '@mui/material/Container';
+import Link from 'next/link';
 
 export default function SearchAppBar() {
   return (
@@ -14,13 +15,10 @@ export default function SearchAppBar() {
       <AppBar position="static">
         <Container maxWidth="lg">
           <Toolbar disableGutters>
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{ flexGrow: 1 }}
-            >
-              DimBlog
+            <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+              <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+                DimBlog
+              </Link>
             </Typography>
             <IconButton
               size="large"

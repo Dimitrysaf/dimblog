@@ -1,6 +1,5 @@
 This project is deployed in Vercel. 
-It uses Neon for Database PostgreSQL and Supabase for API backend. 
-As UI library, this project ONLY USES Material UI (MUI).
+For API and database usage we are using Supabase
 
 # **AI Development Guidelines for Next.js in Firebase Studio**
 
