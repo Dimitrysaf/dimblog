@@ -52,8 +52,8 @@ export default function PostPage() {
         }
 
         setPost(data);
-      } catch (err: any) {
-        setError(err.message || 'An unexpected error occurred.');
+      } catch (err: unknown) {
+        setError((err as Error).message || 'An unexpected error occurred.');
       } finally {
         setLoading(false);
       }

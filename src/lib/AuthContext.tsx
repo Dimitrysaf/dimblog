@@ -1,12 +1,12 @@
 // AuthContext.tsx
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, AuthError } from '@supabase/supabase-js';
+import { User, AuthError, Session } from '@supabase/supabase-js';
 import { supabase } from './supabaseClient';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ data: any; error: AuthError | null }>;
+  signIn: (email: string, password: string) => Promise<{ data: { user: User | null; session: Session | null }; error: AuthError | null }>;
   signOut: () => Promise<void>;
   isLoggedIn: boolean;
 }
@@ -14,7 +14,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  signIn: async () => ({ data: null, error: null }),
+  signIn: async () => ({ data: { user: null, session: null }, error: null }),
   signOut: async () => {},
   isLoggedIn: false,
 });
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     });
 
     // Listen for login/logout
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 

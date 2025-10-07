@@ -15,7 +15,7 @@ export default function MyAppBar() {
   // Konami Code to open login dialog
   useEffect(() => {
     const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-    let sequence: string[] = [];
+    const sequence: string[] = [];
     
     const onKeyDown = (event: KeyboardEvent) => {
       sequence.push(event.key);
