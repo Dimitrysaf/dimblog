@@ -1,7 +1,13 @@
-// AuthContext.tsx
+// src/lib/AuthContext.tsx
+'use client'; // Είναι σημαντικό να παραμείνει client component
+
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, AuthError, Session } from '@supabase/supabase-js';
-import { supabase } from './supabaseClient';
+// ΔΙΟΡΘΩΣΗ: Άλλαξε την πηγή του import για το Supabase client
+import { createClient } from '../utils/supabase/client';
+
+// Δημιουργούμε ένα client instance που θα χρησιμοποιείται μόνο σε αυτό το context
+const supabase = createClient();
 
 interface AuthContextType {
   user: User | null;

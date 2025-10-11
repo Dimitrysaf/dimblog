@@ -1,17 +1,15 @@
-'use client';
 
-import { useEffect, useState } from 'react';
 import {
-  Grid as Grid, // Corrected import for MUI v6+
+  Grid,
   Card,
   CardContent,
   CardMedia,
   Typography,
   Box,
-  CircularProgress,
   CardActionArea,
+  Alert
 } from '@mui/material';
-import { supabase } from '../../lib/supabaseClient';
+import { createClient } from '@/utils/supabase/server';
 import InboxIcon from '@mui/icons-material/Inbox';
 import Link from 'next/link';
 
@@ -25,40 +23,16 @@ interface Post {
   created_at: string;
 }
 
-export default function PostGrid() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function PostGrid() {
+  const supabase = createClient();
+  const { data: posts, error } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('status', 'published')
+    .order('created_at', { ascending: false });
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('posts')
-          .select('*')
-          .eq('status', 'published')
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          throw error;
-        }
-        
-        setPosts(data || []);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPosts();
-  }, []);
-
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-        <CircularProgress />
-      </Box>
-    );
+  if (error) {
+    return <Alert severity="error">Error fetching posts.</Alert>;
   }
 
   if (posts.length === 0) {
@@ -85,8 +59,7 @@ export default function PostGrid() {
   return (
       <Grid container spacing={4}>
         {posts.map((post) => (
-          // Corrected Grid usage for MUI v6+
-          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={post.id}>
+          <Grid item xs={12} sm={6} md={4} key={post.id}>
             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <CardActionArea component={Link} href={`/post/${post.slug}`}>
                 {post.image_url && (

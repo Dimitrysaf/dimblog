@@ -1,17 +1,12 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { supabase } from '../../../lib/supabaseClient';
+import { createClient } from '@/utils/supabase/server';
 import {
   Container,
   Typography,
   Box,
-  CircularProgress,
   CardMedia,
   Paper,
-  Alert,
 } from '@mui/material';
+import { notFound } from 'next/navigation';
 
 // Define the Post type, mirroring your database structure
 interface Post {
@@ -23,63 +18,29 @@ interface Post {
   created_at: string;
 }
 
-export default function PostPage() {
-  const [post, setPost] = useState<Post | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const params = useParams();
-  const slug = params.slug as string;
+// Props interface for the page
+interface PostPageProps {
+  params: {
+    slug: string;
+  };
+}
 
-  useEffect(() => {
-    if (!slug) return;
+// The component is now async
+export default async function PostPage({ params }: PostPageProps) {
+  // Create a new Supabase client for this server-side request
+  const supabase = createClient();
+  const { slug } = params;
 
-    const fetchPost = async () => {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('posts')
-          .select('*')
-          .eq('slug', slug)
-          .single(); // .single() fetches a single record, or null if not found
+  // Fetch the post directly on the server
+  const { data: post, error } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('slug', slug)
+    .single();
 
-        if (error) {
-          // Throws an error if more than one row is found, which is good for slugs
-          throw new Error(`Post with slug '${slug}' not found.`);
-        }
-
-        if (!data) {
-          throw new Error(`Post with slug '${slug}' not found.`);
-        }
-
-        setPost(data);
-      } catch (err: unknown) {
-        setError((err as Error).message || 'An unexpected error occurred.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPost();
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Container maxWidth="md" sx={{ mt: 4, textAlign: 'center' }}>
-        <Alert severity="error">{error}</Alert>
-      </Container>
-    );
-  }
-
-  if (!post) {
-    return null; // Should be handled by the error state
+  // If there's an error or no post is found, show the not-found page
+  if (error || !post) {
+    notFound();
   }
 
   return (

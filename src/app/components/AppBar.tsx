@@ -4,41 +4,34 @@ import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import EditIcon from '@mui/icons-material/Edit';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useAuth } from '../../lib/AuthContext';
 import LoginDialog from './LoginDialog';
+import { createClient } from '@/utils/supabase/client';
+import { User } from '@supabase/supabase-js';
 
 export default function MyAppBar() {
-  const { user, signOut } = useAuth();
   const router = useRouter();
   const [loginOpen, setLoginOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const supabase = createClient();
 
-  // Konami Code to open login dialog
   useEffect(() => {
-    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-    const sequence: string[] = [];
-    
-    const onKeyDown = (event: KeyboardEvent) => {
-      sequence.push(event.key);
-      
-      if (sequence.length > konamiCode.length) {
-        sequence.shift();
-      }
-
-      if (sequence.join('') === konamiCode.join('')) {
-        setLoginOpen(true);
-      }
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
     };
+    getUser();
 
-    window.addEventListener('keydown', onKeyDown);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null);
+    });
 
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-    };
-  }, []);
+    return () => subscription.unsubscribe();
+  }, [supabase]);
 
   const handleLogout = async () => {
-    await signOut();
+    await supabase.auth.signOut();
     router.push('/');
+    router.refresh();
   };
 
   return (
@@ -74,7 +67,11 @@ export default function MyAppBar() {
                 Logout
               </Button>
             </>
-          ) : null }
+          ) : (
+            <Button color="inherit" onClick={() => setLoginOpen(true)}>
+              Login
+            </Button>
+          ) }
         </Toolbar>
       </AppBar>
 
